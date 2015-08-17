@@ -1,0 +1,19 @@
+{
+  "name": "wet",
+  "version": "0.0.0",
+  "description": "Grabbing metadata from webpages",
+  "bin": {
+    "wet": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "request": "^2.60.0"
+  },
+  "devDependencies": {
+    "lodash": "^3.10.1",
+    "mocha": "^2.2.5"
+  }
+}
