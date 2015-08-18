@@ -1,11 +1,18 @@
 var request = require('request')
 var cheerio = require('cheerio')
+var iconv = require('iconv-lite')
 var urllib = require('url')
 
 module.exports = getMeta
 
 
-function getMeta(url, callback){
+function getMeta(url, encoding, callback){
+  // also getMeta(url, callback)
+  if (arguments.length === 2) {
+    callback = encoding
+    encoding = null
+  }
+
   // make '//baidu.com' to 'baidu.com'
   url = url.replace(/^\/\//, '')
   // make 'baidu.com' (default) to 'http://baidu.com'
@@ -13,7 +20,7 @@ function getMeta(url, callback){
     url = 'http://' + url
   }
 
-  ensureLoad(url, function(err, html){
+  ensureLoad(url, encoding, function(err, html){
     if (err) {
       return callback(err)
     }
@@ -50,6 +57,7 @@ function getMeta(url, callback){
       // todo: more intellegent
       // image-size, ajax-load, background-image, etc?
       // to deal with google.com
+      // maybe using **search engine** to get a main image????
       imageSrc = $images.first().attr('src')
       imageSrc = urllib.resolve(baseUrl, imageSrc)
       meta.image = imageSrc
@@ -61,13 +69,17 @@ function getMeta(url, callback){
 }
 
 
-function ensureLoad(url, callback){
+function ensureLoad(url, encoding, callback){
   // auto take refresh to ensure page load
-  request(url, function(err, res, html){
+  request({
+    url: url,
+    encoding: null // means buffer
+  }, function(err, res, buf){
     if (err) {
       return callback(err)
     }
 
+    var html = encoding ? toUtf8(buf, encoding) : buf.toString()
     var $ = cheerio.load(html)
     var $refresh = $('meta[http-equiv=refresh]')
 
@@ -78,10 +90,14 @@ function ensureLoad(url, callback){
       var match = content.match(/;url=(.+)?;?/)
       if (match) {
         var nextUrl = match[1]
-        return ensureLoad(nextUrl, callback)
+        return ensureLoad(nextUrl, encoding, callback)
       }
     }
 
     callback(null, html)
   })
+}
+
+function toUtf8(buf, encoding) {
+  return iconv.decode(buf, encoding)
 }

@@ -5,11 +5,12 @@ Grabbing metadata from webpages
 ```plain
 # Use in terminal
 $ npm i -g wet
-$ wet baidu.com
-$ wet //baidu.com        # also
-$ wet http://baidu.com   # also
-$ wet https://baidu.com  # bug, needs improvement
 $ wet https://www.baidu.com  # okay
+$ wet https://baidu.com      # bug, needs improvement
+$ wet http://baidu.com       # also
+$ wet //baidu.com            # also
+$ wet baidu.com              # also
+$ wet www.wyu.cn gbk         # other encodings
 ```
 
 ```js
