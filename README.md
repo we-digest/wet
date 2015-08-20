@@ -1,4 +1,4 @@
-# wet (In Progress..) 
+# wet
 
 Grabbing metadata from webpages
 
@@ -10,13 +10,18 @@ $ wet https://baidu.com      # bug, needs improvement
 $ wet http://baidu.com       # also
 $ wet //baidu.com            # also
 $ wet baidu.com              # also
-$ wet www.wyu.cn gbk         # other encodings
+$ wet www.wyu.cn gbk         # encodings specified
+$ wet www.163.com gbk        # also
+$ wet www.163.com            # also, would auto-detect
 ```
 
 ```js
 // Use in node.js
 var wet = require('wet')
-wet('baidu.com', function(err, meta){
+wet('www.baidu.com', function(err, meta){
+  console.log(meta)
+})
+wet('www.wyu.cn', 'gbk', function(err, meta){
   console.log(meta)
 })
 ```

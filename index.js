@@ -1,6 +1,7 @@
 var request = require('request')
 var cheerio = require('cheerio')
 var iconv = require('iconv-lite')
+var chardet = require('jschardet')
 var urllib = require('url')
 
 module.exports = getMeta
@@ -47,7 +48,7 @@ function getMeta(url, encoding, callback){
     }
     if (!meta.description) {
       // todo: more intellegent analyzing
-      meta.description = $('body').text().slice(0, 140)
+      meta.description = $('p').text().slice(0, 140)
     }
 
     // image holder
@@ -73,13 +74,29 @@ function ensureLoad(url, encoding, callback){
   // auto take refresh to ensure page load
   request({
     url: url,
+    headers: {
+      // make sure visit allowed
+      'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+    },
     encoding: null // means buffer
   }, function(err, res, buf){
     if (err) {
       return callback(err)
     }
 
-    var html = encoding ? toUtf8(buf, encoding) : buf.toString()
+    if (!encoding) {
+      // auto charset detect
+      var det = chardet.detect(buf)
+      if (det) {
+        if (det.encoding === 'ascii') {
+          encoding = 'utf8'
+        } else {
+          encoding = det.encoding
+        }
+      }
+    }
+
+    var html = encoding === 'utf8' ? buf.toString() : toUtf8(buf, encoding)
     var $ = cheerio.load(html)
     var $refresh = $('meta[http-equiv=refresh]')
 
