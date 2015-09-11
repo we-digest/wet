@@ -69,6 +69,48 @@ function getMeta(url, encoding, callback){
   })
 }
 
+/*
+function baiduSearch(keyword, callback){
+  request({
+    url: 'https://www.baidu.com/s',
+    query: {
+      'wd': keyword,
+      'ie': 'utf-8'
+    },
+    headers: {
+      'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36'
+    }
+  }, function(err, res, html){ // already utf8
+    if (err) {
+      return callback(err)
+    }
+
+    var meta = {}
+    var $ = cheerio.load(html)
+    var $list = $('.c-container')
+
+    // 有则取官网 无则取第一条
+    var $result = $list.filter(function(i, el){
+      return $(el).find('h3 .OP_LOG_LINK').text() === '官网'
+    }).first()
+    if ($result.length <= 0) {
+      $result = $list.first()
+    }
+
+    var $abstract = $result.find('.c-abstract')
+    if ($abstract.length >= 1) {
+      meta.description = $abstract.text()
+    }
+
+    var $image = $result.find('.c-img')
+    if ($image.length >= 1) {
+      meta.image = $image.attr('src') // already full url
+    }
+
+    callback(null, meta)
+  })
+}
+*/
 
 function ensureLoad(url, encoding, callback){
   // auto take refresh to ensure page load
