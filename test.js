@@ -1,27 +1,29 @@
-var getMeta = require('./')
+var fetchMeta = require('./')
 var assert = require('assert')
 var _ = require('lodash')
 
-var resultBaidu = { title: '百度一下，你就知道',
-  description: '搜索设置|百度首页|登录注册新闻　网页　贴吧　知道　音乐　图片　视\
-频　地图　文库　更多»输入法手写拼音关闭推荐 : 百度浏览器，打开网页快2秒！新闻h\
-ao123地图视频贴吧登录设置更多产品新 闻　网 页　贴 吧　知 道　音 乐　图 片\
-　视 频　地 图输入法手写拼音关闭百科　文库　',
-  image: 'http://www.baidu.com/img/baidu_jgylogo3.gif' }
+var resultBaidu = { url: 'http://baidu.com',
+  finalUrl: 'https://www.baidu.com/',
+  title: '百度一下，你就知道',
+  description: '把百度设为主页把百度设为主页关于百度About  Baidu©2015 Baidu \
+使用百度前必读 意见反馈 京ICP证030173号 ',
+  image: 'http://www.baidu.com/img/bd_logo1.png' }
 
-var resultWYU = { title: '五邑大学欢迎你',
+var resultWYU = { url: 'http://www.wyu.cn',
+  finalUrl: 'http://www.wyu.cn/',
+  title: '五邑大学欢迎你',
   description: '五邑大学在培养高素质创新型人才、取得突破性科研进展，以及为国民经\
 济发展和社会进步提供智力支持等方面都发挥着极其重要的作用。',
-  image: 'http://www.wyu.cn/images/moving5.jpg' }
+  image: 'http://www.wyu.cn/images/moving4.jpg' }
 
 
-describe('#getMeta', function(){
+describe('#fetchMeta', function(){
 
   this.timeout(20000)
 
   it('http://www.wyu.cn (gbk)', function(done){
 
-    getMeta('http://www.wyu.cn', 'gbk', function(err, meta){
+    fetchMeta('http://www.wyu.cn', function(err, meta){
       assert.deepEqual(meta, resultWYU)
       done()
     })
@@ -30,7 +32,7 @@ describe('#getMeta', function(){
 
   it('http://baidu.com', function(done){
 
-    getMeta('http://baidu.com', function(err, meta){
+    fetchMeta('http://baidu.com', function(err, meta){
       assert.deepEqual(meta, resultBaidu)
       done()
     })
@@ -39,7 +41,7 @@ describe('#getMeta', function(){
 
   it('//baidu.com', function(done){
 
-    getMeta('//baidu.com', function(err, meta){
+    fetchMeta('//baidu.com', function(err, meta){
       assert.deepEqual(meta, resultBaidu)
       done()
     })
@@ -48,7 +50,7 @@ describe('#getMeta', function(){
 
   it('baidu.com', function(done){
 
-    getMeta('baidu.com', function(err, meta){
+    fetchMeta('baidu.com', function(err, meta){
       assert.deepEqual(meta, resultBaidu)
       done()
     })
@@ -57,9 +59,12 @@ describe('#getMeta', function(){
 
   it('+ https://baidu.com', function(done){
 
-    getMeta('https://baidu.com', function(err, meta){
-      assert.equal(meta.title, '百度一下，你就知道')
-      assert.equal(meta.image, 'http://www.baidu.com/img/bdlogo.gif')
+    fetchMeta('https://baidu.com', function(err, meta){
+      assert.deepEqual(meta, _.extend(resultBaidu, {
+        url: resultBaidu.url.replace('http://', 'https://'),
+        finalUrl: resultBaidu.finalUrl.replace('http://', 'https://'),
+        image: resultBaidu.image.replace('http://', 'https://')
+      }))
       done()
     })
 
